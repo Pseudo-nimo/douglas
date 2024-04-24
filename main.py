@@ -12,16 +12,27 @@ _movementModes = [
 ]
 
 class Player():
-    h,v,d = 1
+    h =1
+    v =1
+    d = 1
     def __init__(self):
-        Pos = _initialPos
-    def analisis():
-        if not (d==0): return 0
+        self.Pos = _initialPos
+    def analisis(self):
+        #checar diagonal
+        if (self.d==0): 
+            # o robo deve escolher andar pelo menor cateto
+            pass
+        else:
+            nextDirection = (1,1)
+        return nextDirection
 
-    def walk():
+    def walk(self):
+        self.Pos[0] += self.analisis[0]
+        self.Pos[1] += self.analisis[1]
+        
         pass
         
             
 
-if __name__() == __init__():
+if __name__ == '__main__':
     robot = Player()
