@@ -17,11 +17,19 @@ _movementModes = [
 
 class Space():
     r:int
-    def __init__(self, pos: list):
+    def __init__(self, p: list):
+        self.Pos = p
+        self.r: int
         pass
     def defineRole(self, r):
         self.role = r
 
+
+class restriction(Space):
+    def __init__(self, r):
+        self.defineRole(r)
+        
+        
 
 
 class Player():
@@ -37,10 +45,8 @@ class Player():
 
     def observarArredores(self):
         return 0
-        
 
-
-    def analysis(self)->list():
+    def analysis(self)->list:
 
         #checar diagonal
         nextDirection=[0,0]
@@ -117,5 +123,7 @@ class Player():
 if __name__ == '__main__':
     robot = Player()
     Gameloop = True
+    print('hello')
     while Gameloop:
+        
         pass
