@@ -4,7 +4,7 @@ import time
 
 # Mapa
 _initialPos = [0,0]
-finalPos = [6,7]
+finalPos = [9,6]
 _movementModes = [
     'Vazio','diagonal','vertical','horizontal'
 ]
@@ -74,7 +74,7 @@ class Player():
                 if (self.h.r != 0):
                     nextDirection = [1,0]
                     pass
-            elif checking == 1:
+            elif checking == 4:
                 if (self.v.r != 0):
                     nextDirection = [0,1]
                     pass
@@ -85,24 +85,23 @@ class Player():
         if not (self.d.r == 255): 
             # o robo deve escolher andar pelo menor cateto
 
-            print('nao pode diagonalizar')
+            print('nao pode diagonalizar', checking)
 
             if checking == 0:
                 if (self.h.r != 0):
-                    nextDirection = [1,0]
-                    pass
+                    return [1,0]
+                    
                         
             elif checking == 1:
                 if (self.v.r != 0):
-                    nextDirection = [0,1]
-                    pass
+                    return [0,1]
+                    
             
             elif checking == 2: 
                 if (self.h.r != 0):
                     nextDirection = [1,0]
                     pass
-
-
+            else: nextDirection=[0,0]
         else:
             #se a diagonal nao estiver bloqueada, devemos andar por ela
             nextDirection = [1,1]
@@ -114,9 +113,14 @@ class Player():
         time.sleep(2)
         if self.Pos == finalPos:
             return 12
+        elif (finalPos[0] - self.Pos[0]) == 0:
+            self.Pos[1] = self.Pos[1] + 1
+        elif (finalPos[1] - self.Pos[1]) == 0:
+            self.Pos[0] = self.Pos[0] + 1
         else:
             self.Pos[0] = self.Pos[0] + self.analysis()[0]
-            self.Pos[1] += self.analysis()[1] 
+            self.Pos[1] = self.Pos[1] + self.analysis()[1]
+            
             
         return -1
 
@@ -125,20 +129,13 @@ class Player():
         hDistance = finalPos[0] - self.Pos[0]
         vDistance = finalPos[1] - self.Pos[1]
 
-        if not (hDistance == 0 or vDistance == 0): 
 
-            if   hDistance > vDistance:
-                return 0
-            elif hDistance < vDistance:
-                return 1
-            else: 
-                return 2
+        if   hDistance > vDistance:
+            return 0
+        elif hDistance < vDistance:
+            return 1
         else: 
-
-            if   hDistance == 0:
-                return 3
-            if   vDistance == 0:
-                return 4
+            return 2
         return -1
 
 
@@ -157,7 +154,7 @@ if __name__ == '__main__':
     for i in range(9,-1, -1):
         for j in range(10):
             #print(f'{tabuleiro[i][j].Pos}'+f' role: {tabuleiro[i][j].r}', end ='')
-            print(f'[{tabuleiro[i][j].r:^5}]', end = '')
+            print(f'[{tabuleiro[j][i].r:^5}]', end = '')
 
         print()
 
