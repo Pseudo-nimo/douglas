@@ -72,7 +72,7 @@ class Player():
                 if (self.h != 0):
                     nextDirection = [1,0]
                     pass
-
+                        # cvggg
             elif checking == 1:
                 if (self.v != 0):
                     nextDirection = [0,1]
