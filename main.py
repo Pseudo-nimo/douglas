@@ -4,7 +4,7 @@ import time
 
 # Mapa
 _initialPos = [0,0]
-finalPos = [9,6]
+finalPos = [8,6]
 _movementModes = [
     'Vazio','diagonal','vertical','horizontal'
 ]
@@ -67,7 +67,7 @@ class Player():
         nextDirection = [-1,-1]
         self.observarArredores()
         checking = self.checarCatetos(self.Pos)
-
+        '''
         if (checking > 2) : 
             # o robo deve checar se já está alinhado com o objetivo
             if checking == 3:
@@ -80,7 +80,7 @@ class Player():
                     pass
             if checking == 12:
                 nextDirection = [0,0]
-
+        '''
 
         if not (self.d.r == 255): 
             # o robo deve escolher andar pelo menor cateto
@@ -110,7 +110,8 @@ class Player():
         
 
     def walk(self):
-        time.sleep(2)
+        time.sleep(0.5)
+        results = self.analysis()
         if self.Pos == finalPos:
             return 12
         elif (finalPos[0] - self.Pos[0]) == 0:
@@ -118,8 +119,8 @@ class Player():
         elif (finalPos[1] - self.Pos[1]) == 0:
             self.Pos[0] = self.Pos[0] + 1
         else:
-            self.Pos[0] = self.Pos[0] + self.analysis()[0]
-            self.Pos[1] = self.Pos[1] + self.analysis()[1]
+            self.Pos[0] = self.Pos[0] + results[0]
+            self.Pos[1] = self.Pos[1] + results[1]
             
             
         return -1
