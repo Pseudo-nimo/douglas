@@ -1,54 +1,61 @@
 import math
 import time
 
-
-
 # Mapa
-tabuleiro = list()
-
 _initialPos = [0,0]
-
 finalPos = [6,7]
-
 _movementModes = [
     'Vazio','diagonal','vertical','horizontal'
 ]
 
 
-
 class Space():
     r:int
+    Pos:list
     def __init__(self, p: list):
         self.Pos = p
-        self.r: int
-        pass
-    def defineRole(self, r):
-        self.role = r
+        self.r = 255
 
+        pass
+    
+
+class initialSpace(Space):
+    def __init__(self):
+        self.r=99
+
+class finalSpace(Space):
+    def __init__(self):
+        self.r=100
 
 class MoveRestriction(Space):
     def __init__(self):
-        self.defineRole(1)
+        self.r = 1
         
+
 
 class Player():
     h: Space
     v: Space
     d: Space
 
+    
     # 100% do código até agora foi escrito a mão
 
 
-    def __init__(self):
+    def __init__(self, t):
         self.Pos = _initialPos
+        self.tab = t
 
     def observarArredores(self):
+        global d,  v, h
+        d=tabuleiro[self.Pos[0]+1][self.Pos[1]+1]
         return 0
 
     def analysis(self)->list:
-
+        
         #checar diagonal
         nextDirection=[0,0]
+        self.observarArredores()
         checking = self.checarCatetos(self.Pos)
 
         if (checking > 2) : 
@@ -98,8 +105,8 @@ class Player():
 
     def checarCatetos(self, pos: list)-> int:
     
-        hDistance = finalPos[0] - pos[0]
-        vDistance = finalPos[1] - pos[1]
+        hDistance = finalPos[0] - self.Pos[0]
+        vDistance = finalPos[1] - self.Pos[1]
 
         if not (hDistance == 0 or vDistance == 0): 
 
@@ -121,9 +128,25 @@ class Player():
             
 
 if __name__ == '__main__':
-    robot = Player()
+    
+    
+
+    tabuleiro = [[Space([i,j]) for i in range(10)] for j in range(10)]
+
+    tabuleiro[_initialPos[0]][_initialPos[1]] = initialSpace()
+    tabuleiro[finalPos[0]][finalPos[1]] = finalSpace()
+    robot = Player(tabuleiro)
     Gameloop = True
-    print('hello')
+
+    for i in range(9,-1, -1):
+        for j in range(10):
+            #print(f'{tabuleiro[i][j].Pos}'+f' role: {tabuleiro[i][j].r}', end ='')
+            print(f'[{tabuleiro[i][j].r:^5}]', end = '')
+
+        print()
+
+    '''
     while Gameloop:
         
         pass
+'''
