@@ -4,7 +4,7 @@ import time
 
 # Mapa
 _initialPos = [0,0]
-finalPos = [9,6]
+finalPos = [3,6]
 _movementModes = [
     'Vazio','diagonal','vertical','horizontal'
 ]
@@ -85,7 +85,7 @@ class Player():
         if not (self.d.r == 255): 
             # o robo deve escolher andar pelo menor cateto
 
-            print('nao pode diagonalizar', checking)
+            #print('nao pode diagonalizar', checking)
 
             if checking == 0:
                 if (self.h.r != 0):
