@@ -4,7 +4,7 @@ import time
 
 # Mapa
 _initialPos = [0,0]
-finalPos = [8,6]
+finalPos = [9,6]
 _movementModes = [
     'Vazio','diagonal','vertical','horizontal'
 ]
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     
     
 
-    tabuleiro = [[Space([i,j]) for i in range(10)] for j in range(10)]
+    tabuleiro = [[Space([i,j]) for i in range(11)] for j in range(11)]
 
     tabuleiro[_initialPos[0]][_initialPos[1]] = initialSpace()
     tabuleiro[finalPos[0]][finalPos[1]] = finalSpace()
