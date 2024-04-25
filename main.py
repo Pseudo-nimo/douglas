@@ -1,4 +1,5 @@
 import math
+import time
 
 
 
@@ -25,12 +26,10 @@ class Space():
         self.role = r
 
 
-class restriction(Space):
-    def __init__(self, r):
-        self.defineRole(r)
+class MoveRestriction(Space):
+    def __init__(self):
+        self.defineRole(1)
         
-        
-
 
 class Player():
     h: Space
@@ -72,7 +71,7 @@ class Player():
                 if (self.h != 0):
                     nextDirection = [1,0]
                     pass
-                        # cvggg
+                        
             elif checking == 1:
                 if (self.v != 0):
                     nextDirection = [0,1]
@@ -91,10 +90,11 @@ class Player():
         
 
     def walk(self):
+        time.sleep(2)
         self.Pos[0] += self.analysis[0] # type: ignore
         self.Pos[1] += self.analysis[1] # type: ignore
         
-        return 0
+        return -1
 
     def checarCatetos(self, pos: list)-> int:
     
