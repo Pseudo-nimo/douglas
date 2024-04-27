@@ -19,7 +19,18 @@ class Space():
         self.r = 255
 
         pass
-    
+
+class Camp():
+    tabuleiro:list 
+    init: Space
+    end: Space
+
+    def __init__(self, i, e):
+        self.tabuleiro= [[Space([i,j]) for i in range(11)] for j in range(11)]
+        self.init= i
+        self.endLocation=e
+        self.tabuleiro[self.endLocation[0]][self.endLocation[1]] = finalSpace
+        
 
 class initialSpace(Space):
     def __init__(self):
@@ -42,31 +53,30 @@ class Player():
     v: Space
     d: Space
     Pos: list
+    tab: Camp
     # 100% do código até agora foi escrito a mão
 
     def __init__(self, t):
         self.Pos = _initialPos
-        self.d=tabuleiro[self.Pos[0]+1][self.Pos[1]+1]
-        self.h=tabuleiro[self.Pos[0]+1][self.Pos[1]]
-        self.v=tabuleiro[self.Pos[0]][self.Pos[1]+1]
-        
         self.tab = t
-
-
+        self.d= self.tab.tabuleiro[self.Pos[0]+1][self.Pos[1]+1]
+        self.h= self.tab.tabuleiro[self.Pos[0]+1][self.Pos[1]]
+        self.v= self.tab.tabuleiro[self.Pos[0]][self.Pos[1]+1]
 
     def observarArredores(self):
-        global d, v, h, Pos
-        self.d=tabuleiro[self.Pos[0]+1][self.Pos[1]+1]
-        self.h=tabuleiro[self.Pos[0]+1][self.Pos[1]]
-        self.v=tabuleiro[self.Pos[0]][self.Pos[1]+1]
+        global d, v, h, Pos, tab
+        self.d=self.tab.tabuleiro[self.Pos[0]+1][self.Pos[1]+1]
+        self.h= self.tab.tabuleiro[self.Pos[0]+1][self.Pos[1]]
+        self.v= self.tab.tabuleiro[self.Pos[0]][self.Pos[1]+1]
         return 0
 
     def analysis(self) -> list:
         global d, v, h
+
         #checar diagonal
         nextDirection = [-1,-1]
         self.observarArredores()
-        checking = self.checarCatetos(self.Pos)
+        checking = self.checarCatetos()
         '''
         if (checking > 2) : 
             # o robo deve checar se já está alinhado com o objetivo
@@ -112,7 +122,7 @@ class Player():
     def walk(self):
         time.sleep(0.5)
         results = self.analysis()
-        if self.Pos == finalPos:
+        if self.Pos == self.tab.endLocation:
             return 12
         elif (finalPos[0] - self.Pos[0]) == 0:
             self.Pos[1] = self.Pos[1] + 1
@@ -125,10 +135,11 @@ class Player():
             
         return -1
 
-    def checarCatetos(self, pos: list)-> int:
+    def checarCatetos(self)-> int:
     
-        hDistance = finalPos[0] - self.Pos[0]
-        vDistance = finalPos[1] - self.Pos[1]
+        #vDistance = finalPos[1] - self.Pos[1]
+        vDistance = self.tab.endLocation[1] - self.Pos[1]
+        hDistance = self.tab.endLocation[0] - self.Pos[0]
 
 
         if   hDistance > vDistance:
@@ -142,20 +153,17 @@ class Player():
 
 if __name__ == '__main__':
     
-    
-
-    tabuleiro = [[Space([i,j]) for i in range(11)] for j in range(11)]
-
-    tabuleiro[_initialPos[0]][_initialPos[1]] = initialSpace()
-    tabuleiro[finalPos[0]][finalPos[1]] = finalSpace()
-    robot = Player(tabuleiro)
-    tabuleiro[1][1] = MoveRestriction()
+    campo = Camp(_initialPos, finalPos)
+    #campo.tabuleiro[_initialPos[0]][_initialPos[1]] = initialSpace()
+    campo.tabuleiro[finalPos[0]][finalPos[1]] = finalSpace()
+    robot = Player(campo)
+    campo.tabuleiro[1][1] = MoveRestriction()
     Gameloop = True
 
     for i in range(9,-1, -1):
         for j in range(10):
-            #print(f'{tabuleiro[i][j].Pos}'+f' role: {tabuleiro[i][j].r}', end ='')
-            print(f'[{tabuleiro[j][i].r:^5}]', end = '')
+            #print(f'{campo.tabuleiro[i][j].Pos}'+f' role: {campo.tabuleiro[i][j].r}', end ='')
+            print(f'[{campo.tabuleiro[j][i].r:^5}]', end = '')
 
         print()
 
