@@ -29,7 +29,7 @@ class Camp():
         self.tabuleiro= [[Space([i,j]) for i in range(11)] for j in range(11)]
         self.init= i
         self.endLocation=e
-        self.tabuleiro[self.endLocation[0]][self.endLocation[1]] = finalSpace
+        self.tabuleiro[self.endLocation[0]][self.endLocation[1]] = finalSpace()
         
 
 class initialSpace(Space):
@@ -154,15 +154,13 @@ class Player():
 if __name__ == '__main__':
     
     campo = Camp(_initialPos, finalPos)
-    #campo.tabuleiro[_initialPos[0]][_initialPos[1]] = initialSpace()
-    campo.tabuleiro[finalPos[0]][finalPos[1]] = finalSpace()
+
     robot = Player(campo)
     campo.tabuleiro[1][1] = MoveRestriction()
     Gameloop = True
 
     for i in range(9,-1, -1):
         for j in range(10):
-            #print(f'{campo.tabuleiro[i][j].Pos}'+f' role: {campo.tabuleiro[i][j].r}', end ='')
             print(f'[{campo.tabuleiro[j][i].r:^5}]', end = '')
 
         print()
