@@ -4,7 +4,7 @@ import time
 
 # Mapa
 _initialPos = [0,0]
-finalPos = [3,6]
+finalPos = [3,9]
 _movementModes = [
     'Vazio','diagonal','vertical','horizontal'
 ]
@@ -25,11 +25,14 @@ class Camp():
     init: Space
     end: Space
 
-    def __init__(self, i, e):
+    def __init__(self, i:list, e):
         self.tabuleiro= [[Space([i,j]) for i in range(11)] for j in range(11)]
-        self.init= i
-        self.endLocation=e
-        self.tabuleiro[self.endLocation[0]][self.endLocation[1]] = finalSpace()
+        self.init= Space(i)
+        self.end=Space(e)
+        
+        self.tabuleiro[self.end.Pos[0]][self.end.Pos[1]] = finalSpace()
+        self.tabuleiro[self.init.Pos[0]][self.init.Pos[1]] = initialSpace()
+        self.tabuleiro[self.init.Pos[0]][self.init.Pos[1]]
         
 
 class initialSpace(Space):
@@ -59,9 +62,9 @@ class Player():
     def __init__(self, t):
         self.Pos = _initialPos
         self.tab = t
-        self.d= self.tab.tabuleiro[self.Pos[0]+1][self.Pos[1]+1]
+        '''self.d= self.tab.tabuleiro[self.Pos[0]+1][self.Pos[1]+1]
         self.h= self.tab.tabuleiro[self.Pos[0]+1][self.Pos[1]]
-        self.v= self.tab.tabuleiro[self.Pos[0]][self.Pos[1]+1]
+        self.v= self.tab.tabuleiro[self.Pos[0]][self.Pos[1]+1]'''
 
     def observarArredores(self):
         global d, v, h, Pos, tab
@@ -77,25 +80,9 @@ class Player():
         nextDirection = [-1,-1]
         self.observarArredores()
         checking = self.checarCatetos()
-        '''
-        if (checking > 2) : 
-            # o robo deve checar se já está alinhado com o objetivo
-            if checking == 3:
-                if (self.h.r != 0):
-                    nextDirection = [1,0]
-                    pass
-            elif checking == 4:
-                if (self.v.r != 0):
-                    nextDirection = [0,1]
-                    pass
-            if checking == 12:
-                nextDirection = [0,0]
-        '''
+
 
         if not (self.d.r == 255): 
-            # o robo deve escolher andar pelo menor cateto
-
-            #print('nao pode diagonalizar', checking)
 
             if checking == 0:
                 if (self.h.r != 0):
@@ -122,7 +109,7 @@ class Player():
     def walk(self):
         time.sleep(0.5)
         results = self.analysis()
-        if self.Pos == self.tab.endLocation:
+        if self.Pos == self.tab.end.Pos:
             return 12
         elif (finalPos[0] - self.Pos[0]) == 0:
             self.Pos[1] = self.Pos[1] + 1
@@ -137,9 +124,8 @@ class Player():
 
     def checarCatetos(self)-> int:
     
-        #vDistance = finalPos[1] - self.Pos[1]
-        vDistance = self.tab.endLocation[1] - self.Pos[1]
-        hDistance = self.tab.endLocation[0] - self.Pos[0]
+        vDistance = self.tab.end.Pos[1] - self.Pos[1]
+        hDistance = self.tab.end.Pos[0] - self.Pos[0]
 
 
         if   hDistance > vDistance:
@@ -157,6 +143,7 @@ if __name__ == '__main__':
 
     robot = Player(campo)
     campo.tabuleiro[1][1] = MoveRestriction()
+    campo.tabuleiro[1][2] = MoveRestriction()
     Gameloop = True
 
     for i in range(9,-1, -1):
