@@ -43,8 +43,9 @@ class finalSpace(Space):
         self.r=100
 
 class MoveRestriction(Space):
-    def __init__(self):
+    def __init__(self,p):
         self.r = 1
+        self.Pos=p
 
 
 class Player():
@@ -64,6 +65,7 @@ class Player():
     def recharge(self):
         for i in range (4):
             print('recarregando: ', self.batery)
+            self.batery+=1
             sleep(1)
 
 
@@ -74,7 +76,7 @@ class Player():
         self.v= self.tab.tabuleiro[self.Pos[0]][self.Pos[1]+1]
         return 0
 
-    def analysis(self) -> list:
+    def analysis(self):
         global d, v, h
 
         #checar diagonal
@@ -84,43 +86,46 @@ class Player():
         vDistance = self.tab.end.Pos[1] - self.Pos[1]
         hDistance = self.tab.end.Pos[0] - self.Pos[0]
 
-        '''checking = self.checarCatetos()'''
-
         if not (self.d.r == 255): 
             if hDistance > vDistance:
                 if (self.h.r != 0):
-                    return [1,0]
+                    return self.h
                             
             elif hDistance < vDistance:
                 if (self.v.r != 0):
-                    return [0,1]
+                    return self.v
                     
             else: 
                 if (self.h.r != 0):
-                    nextDirection = [1,0]
-                    pass
+                    return self.h
+                   
         else:
             #se a diagonal nao estiver bloqueada, devemos andar por ela
-            nextDirection = [1,1]
-
-        return nextDirection
-        
+            return self.d
+        return Space([0,0])
 
     def walk(self):
+        global d, h, v
+        
         sleep(0.5)
+
+        results:Space
+        # a variavel results deve guardar as informações do espaço escolhido para ser o próximo
         results = self.analysis()
-        if self.Pos == self.tab.end.Pos:
-            return 12
-        elif (finalPos[0] - self.Pos[0]) == 0:
+        
+        if self.batery<2 or self.tab.tabuleiro [results.Pos[0]][results.Pos[1]].r == 256:
+            self.recharge()
+            return 0
+        
+        if (finalPos[0] - self.Pos[0]) == 0:
             self.Pos[1] = self.Pos[1] + 1
         elif (finalPos[1] - self.Pos[1]) == 0:
             self.Pos[0] = self.Pos[0] + 1
         else:
-            self.Pos[0] = self.Pos[0] + results[0]
-            self.Pos[1] = self.Pos[1] + results[1]
-            
-            
-        return -1
+            self.Pos = results.Pos
+        self.batery-=1
+        print(robot.Pos)
+        return 0
 
 
 if __name__ == '__main__':
@@ -128,8 +133,8 @@ if __name__ == '__main__':
     campo = Camp(_initialPos, finalPos)
 
     robot = Player(campo)
-    campo.tabuleiro[1][1] = MoveRestriction()
-    campo.tabuleiro[1][2] = MoveRestriction()
+    campo.tabuleiro[1][1] = MoveRestriction([1,1])
+    campo.tabuleiro[1][2] = MoveRestriction([1,2])
     Gameloop = True
 
     for i in range(9,-1, -1):
@@ -139,7 +144,8 @@ if __name__ == '__main__':
 
     
     while Gameloop:
-        print(robot.Pos)
-        if robot.walk() == 12:
+        robot.walk()
+        
+        if robot.Pos == finalPos:
             print('chegou')
             Gameloop=False
