@@ -47,6 +47,11 @@ class MoveRestriction(Space):
         self.r = 1
         self.Pos=p
 
+class RechargeRestriction(Space):
+    def __init__(self,p):
+        self.r = -1
+        self.Pos=p
+
 
 class Player():
     h: Space
@@ -113,7 +118,9 @@ class Player():
         # a variavel results deve guardar as informações do espaço escolhido para ser o próximo
         results = self.analysis()
         
-        if self.batery<2 or self.tab.tabuleiro [results.Pos[0]][results.Pos[1]].r == 256:
+        # Recarga impossivel no proximo espaço
+        shadowZone = self.tab.tabuleiro[results.Pos[0]][results.Pos[1]].r == -1 # and self.batery<3
+        if self.batery==1 or shadowZone:
             self.recharge()
             return 0
         
@@ -135,6 +142,7 @@ if __name__ == '__main__':
     robot = Player(campo)
     campo.tabuleiro[1][1] = MoveRestriction([1,1])
     campo.tabuleiro[1][2] = MoveRestriction([1,2])
+    campo.tabuleiro[6][1] = RechargeRestriction([6,1])
     Gameloop = True
 
     for i in range(9,-1, -1):
