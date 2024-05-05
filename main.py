@@ -8,7 +8,7 @@ Gameloop = True
 
 class Content(Enum):
     EMPTY = 255
-    MOVE_RESTRICTION = 1
+    MOVE_RESTRICTION = 0
     RECHARGE_RESTRICTION = -1
     INITIAL_SPACE = 99
     FINAL_SPACE = 100
@@ -22,17 +22,17 @@ class Space():
         pass
 
 class Camp():
-    tabuleiro:list 
+    matrix:list 
     init: Space
     end: Space
 
     def __init__(self):
         
-        self.tabuleiro= [[Space([column,line]) for line in range(11)] for column in range(11)]
+        self.matrix= [[Space([column,line]) for line in range(11)] for column in range(11)]
         
     
     def createSpace(self,spaceType:Space):
-        self.tabuleiro[spaceType.Pos[0]][spaceType.Pos[1]] = spaceType
+        self.matrix[spaceType.Pos[0]][spaceType.Pos[1]] = spaceType
         if spaceType.content == Content.FINAL_SPACE:
             self.end = spaceType
 
@@ -57,22 +57,14 @@ class RechargeRestriction(Space):
         self.Pos=pos
 
 class Player():
-    horizontal: Space
-    vertical: Space
-    diagonal: Space
-    Pos: list
-    tab: Camp
-    batery: list
-    # 100% do código até agora foi escrito a mão
 
     def __init__(self, t):
         self.position = [0,0]
-        self.tab = t
+        self.world = t
         self.batery=[1,1,1,1]
 
     def recharge(self):
         while len(self.batery)<5:
-            print('recarregando: ', self.batery)
             self.batery.append(1)
             sleep(1)
 
@@ -81,28 +73,24 @@ class Player():
         results:Space
         # a variavel results deve guardar as informações do espaço escolhido para ser o próximo
 
-        self.diagonal=self.tab.tabuleiro[self.position[0]+1][self.position[1]+1]
-        self.horizontal= self.tab.tabuleiro[self.position[0]+1][self.position[1]]
-        self.vertical= self.tab.tabuleiro[self.position[0]][self.position[1]+1]
+        self.diagonal=self.world.matrix[self.position[0]+1][self.position[1]+1]
+        self.horizontal= self.world.matrix[self.position[0]+1][self.position[1]]
+        self.vertical= self.world.matrix[self.position[0]][self.position[1]+1]
         
-        '''print('D/V/H:', self.diagonaliagonal.Pos,'/',self.vertical.Pos,'/',self.horizontal.Pos)
-        print('VD: ',vDistance)
-        print('HD: ',hDistance)'''
-
         #se a diagonal nao estiver bloqueada, devemos andar por ela
         if (self.diagonal.content != Content.MOVE_RESTRICTION): results= self.diagonal
 
         #caso contrario faremos uma analise do menor cateto
         else:
-            vDistance = self.tab.end.Pos[1] - self.position[1]
-            hDistance = self.tab.end.Pos[0] - self.position[0]
+            _vDistance = self.world.end.Pos[1] - self.position[1]
+            _hDistance = self.world.end.Pos[0] - self.position[0]
 
-            if hDistance < vDistance:
+            if _hDistance < _vDistance:
                 if (self.horizontal.content != Content.MOVE_RESTRICTION):
                     results= self.horizontal
                 else: raise Exception('erro na horizonta')
                             
-            elif hDistance > vDistance:
+            elif _hDistance > _vDistance:
                 if (self.vertical.content != Content.MOVE_RESTRICTION):
                     results= self.vertical
                 else: raise Exception('erro na vertical')
@@ -112,15 +100,13 @@ class Player():
                     results= self.horizontal
         
         # Cancela o movimento diagonal quando alinhar
-        if (FINAL_POS[0]-self.position[0])==0:  results= self.vertical
-        elif(FINAL_POS[1]-self.position[1])==0:results=self.horizontal 
+        if (FINAL_POS[0]-self.position[0])==0:  results = self.vertical
+        elif(FINAL_POS[1]-self.position[1])==0: results=self.horizontal 
 
         # Recarga impossivel no proximo espaço
         shadowZone = results.content == Content.RECHARGE_RESTRICTION
 
-        if len(self.batery)==1 or (shadowZone and len(self.batery)<3):
-            print('Recarga obrigatória')
-            self.recharge()
+        if len(self.batery)==1 or (shadowZone and len(self.batery)<3):self.recharge()
 
         self.position = results.Pos
         self.batery.pop()
@@ -141,7 +127,7 @@ if __name__ == '__main__':
 
     for line in range(9,-1, -1):
         for column in range(10):
-            print(f'[{campo.tabuleiro[column][line].content.value :^5}]', end = '')
+            print(f'[{campo.matrix[column][line].content.value :^5}]', end = '')
         print()
 
     
