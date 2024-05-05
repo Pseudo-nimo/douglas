@@ -12,6 +12,11 @@ class Content(Enum):
     RECHARGE_RESTRICTION = -1
     INITIAL_SPACE = 99
     FINAL_SPACE = 100
+    GOLD = 191
+    SILVER = 127
+    BRONZE = 63
+
+
 
 class Space():
     r:int
@@ -56,6 +61,20 @@ class RechargeRestriction(Space):
         self.content = Content.RECHARGE_RESTRICTION
         self.Pos=pos
 
+class Mineral(Space):
+    def __init__(self,p):
+        pass
+
+class Gold(Mineral):
+    def __init__(self, p):
+        self.Pos=p
+        self.content=Content.GOLD
+
+class Silver(Mineral):
+    def __init__(self, p):
+        self.Pos=p
+        self.content=Content.SILVER
+
 class Player():
 
     def __init__(self, t):
@@ -86,12 +105,12 @@ class Player():
             _hDistance = self.world.end.Pos[0] - self.position[0]
 
             if _hDistance < _vDistance:
-                if (self.horizontal.content != Content.MOVE_RESTRICTION):
+                if (self.horizontal.content != Content.MOVE_RESTRICTION): 
                     results= self.horizontal
                 else: raise Exception('erro na horizonta')
                             
             elif _hDistance > _vDistance:
-                if (self.vertical.content != Content.MOVE_RESTRICTION):
+                if (self.vertical.content != Content.MOVE_RESTRICTION): 
                     results= self.vertical
                 else: raise Exception('erro na vertical')
                     
