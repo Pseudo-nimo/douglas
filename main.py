@@ -11,7 +11,6 @@ class Space():
     def __init__(self, p: list):
         self.Pos = p
         self.r = 255
-
         pass
 
 class Camp():
@@ -21,32 +20,35 @@ class Camp():
 
     def __init__(self, i:list, e):
         
-        self.tabuleiro= [[Space([i,j]) for i in range(11)] for j in range(11)]
-        self.init= Space(i)
-        self.end=Space(e)
+        self.tabuleiro= [[Space([j,i]) for i in range(11)] for j in range(11)]
         
-        self.tabuleiro[self.end.Pos[0]][self.end.Pos[1]] = finalSpace()
-        self.tabuleiro[self.init.Pos[0]][self.init.Pos[1]] = initialSpace()
-        self.tabuleiro[self.init.Pos[0]][self.init.Pos[1]]
-        
+    
+    def createSpace(self,spaceType:Space):
+        self.tabuleiro[spaceType.Pos[0]][spaceType.Pos[1]] = spaceType
+        if spaceType.r == 100:
+            self.end = spaceType
+
+    
 
 class initialSpace(Space):
-    def __init__(self):
+    def __init__(self,pos):
         self.r=99
+        self.Pos=pos
 
 class finalSpace(Space):
-    def __init__(self):
+    def __init__(self,p):
         self.r=100
+        self.Pos=p
 
 class MoveRestriction(Space):
-    def __init__(self,p):
+    def __init__(self,pos):
         self.r = 1
-        self.Pos=p
+        self.Pos=pos
 
 class RechargeRestriction(Space):
-    def __init__(self,p):
+    def __init__(self,pos):
         self.r = -1
-        self.Pos=p
+        self.Pos=pos
 
 
 class Player():
@@ -92,7 +94,6 @@ class Player():
         else:
             #Caso contrario devemos analisar o menor cateto
             if hDistance < vDistance:
-                print(self.h.Pos)
                 if (self.h.r != 1):
                     return self.h
                 else: raise Exception('erro na horizonta')
@@ -121,14 +122,13 @@ class Player():
 
         # Cancela o movimento diagonal quando alinhar
         if (finalPos[0] - self.Pos[0]) == 0:  
-            if self.tab.tabuleiro[self.Pos[0]][self.Pos[1]+1].r == -1:
+            if self.v.r == -1:
                 self.recharge()
             self.Pos[1] = self.Pos[1] + 1
         elif (finalPos[1] - self.Pos[1]) == 0: 
-            if self.tab.tabuleiro[self.Pos[0] + 1][self.Pos[1]].r == -1: 
+            if self.h.r == -1: 
                 self.recharge()
-            self.Pos[0] = self.Pos[0] + 1        
-        
+            self.Pos = self.h.Pos     
         else:
             self.Pos = results.Pos
         self.batery-=1
@@ -139,14 +139,18 @@ if __name__ == '__main__':
     campo = Camp(_initialPos, finalPos)
 
     robot = Player(campo)
-    campo.tabuleiro[2][2] = MoveRestriction([2,2])
+    ##campo.tabuleiro[2][2] = MoveRestriction([2,2])
     campo.tabuleiro[2][3] = MoveRestriction([2,3])
-    campo.tabuleiro[9][8] = RechargeRestriction([9,8])
+    #campo.tabuleiro[9][8] = RechargeRestriction([9,8])
+    campo.createSpace(MoveRestriction([2,2]))
+    campo.createSpace(MoveRestriction([5,3]))
+    campo.createSpace(initialSpace(_initialPos))
+    campo.createSpace(finalSpace(finalPos))
     Gameloop = True
 
     for i in range(9,-1, -1):
         for j in range(10):
-            print(f'[{campo.tabuleiro[i][j].r:^5}]', end = '')
+            print(f'[{campo.tabuleiro[j][i].r:^5}]', end = '')
         print()
 
     
