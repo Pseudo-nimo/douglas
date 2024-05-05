@@ -1,8 +1,11 @@
 from time import sleep 
 
 # Mapa
-_initialPos = [0,0]
-finalPos = [7,6]
+INITIAL_POS = [0,0]
+FINAL_POS = [6,6]
+
+
+Gameloop = True
 
 
 class Space():
@@ -18,9 +21,9 @@ class Camp():
     init: Space
     end: Space
 
-    def __init__(self, i:list, e):
+    def __init__(self):
         
-        self.tabuleiro= [[Space([j,i]) for i in range(11)] for j in range(11)]
+        self.tabuleiro= [[Space([column,line]) for line in range(11)] for column in range(11)]
         
     
     def createSpace(self,spaceType:Space):
@@ -28,14 +31,13 @@ class Camp():
         if spaceType.r == 100:
             self.end = spaceType
 
-    
-
 class initialSpace(Space):
     def __init__(self,pos):
         self.r=99
         self.Pos=pos
 
 class finalSpace(Space):
+    _t: int
     def __init__(self,p):
         self.r=100
         self.Pos=p
@@ -50,18 +52,17 @@ class RechargeRestriction(Space):
         self.r = -1
         self.Pos=pos
 
-
 class Player():
-    h: Space
-    v: Space
-    d: Space
+    horizontal: Space
+    vertical: Space
+    diagonal: Space
     Pos: list
     tab: Camp
     batery: int
     # 100% do código até agora foi escrito a mão
 
     def __init__(self, t):
-        self.Pos = _initialPos
+        self.position = [0,0]
         self.tab = t
         self.batery = 4
 
@@ -71,92 +72,79 @@ class Player():
             self.batery+=1
             sleep(1)
 
-    def analysis(self):
-        global Pos
-        print('atual: ', self.Pos)
-        self.d=self.tab.tabuleiro[self.Pos[0]+1][self.Pos[1]+1]
-        self.h= self.tab.tabuleiro[self.Pos[0]+1][self.Pos[1]]
-        self.v= self.tab.tabuleiro[self.Pos[0]][self.Pos[1]+1]
+    def move(self):
+
+        sleep(1)
+        results:Space
+        # a variavel results deve guardar as informações do espaço escolhido para ser o próximo
+
+        self.diagonal=self.tab.tabuleiro[self.position[0]+1][self.position[1]+1]
+        self.horizontal= self.tab.tabuleiro[self.position[0]+1][self.position[1]]
+        self.vertical= self.tab.tabuleiro[self.position[0]][self.position[1]+1]
         
-        print('D/V/H:',
-              self.d.Pos,'/'
-              ,self.v.Pos,'/'
-              ,self.h.Pos)
-        vDistance = self.tab.end.Pos[1] - self.Pos[1]
-        hDistance = self.tab.end.Pos[0] - self.Pos[0]
-
+        '''print('D/V/H:', self.diagonaliagonal.Pos,'/',self.vertical.Pos,'/',self.horizontal.Pos)
         print('VD: ',vDistance)
-        print('HD: ',hDistance)
+        print('HD: ',hDistance)'''
 
-        if (self.d.r == 255):
-            #se a diagonal nao estiver bloqueada, devemos andar por ela
-            return self.d
+        #se a diagonal nao estiver bloqueada, devemos andar por ela
+        if (self.diagonal.r == 255): results= self.diagonal
+
+        #caso contrario faremos uma analise do menor cateto
         else:
-            #Caso contrario devemos analisar o menor cateto
+            vDistance = self.tab.end.Pos[1] - self.position[1]
+            hDistance = self.tab.end.Pos[0] - self.position[0]
+
             if hDistance < vDistance:
-                if (self.h.r != 1):
-                    return self.h
+                if (self.horizontal.r != 1):
+                    results= self.horizontal
                 else: raise Exception('erro na horizonta')
                             
             elif hDistance > vDistance:
-                if (self.v.r != 1):
-                    return self.v
+                if (self.vertical.r != 1):
+                    results= self.vertical
                 else: raise Exception('erro na vertical')
                     
             else: 
-                if (self.h.r != 1):
-                    return self.h
+                if (self.horizontal.r != 1):
+                    results= self.horizontal
         
-        return Space([0,0])
+        # Cancela o movimento diagonal quando alinhar
+        if (FINAL_POS[0]-self.position[0])==0:  results= self.vertical
+        elif(FINAL_POS[1]-self.position[1])==0:results=self.horizontal 
 
-    def walk(self):
-        sleep(1)
-        # a variavel results deve guardar as informações do espaço escolhido para ser o próximo
-        results = self.analysis()
-        
         # Recarga impossivel no proximo espaço
-        shadowZone = self.tab.tabuleiro[results.Pos[0]][results.Pos[1]].r == -1 
+        shadowZone = results.r == -1 
 
-        if self.batery==1 or shadowZone:
+        if self.batery==1 or (shadowZone and self.batery<3):
+            print('Recarga obrigatória')
             self.recharge()
 
-        # Cancela o movimento diagonal quando alinhar
-        if (finalPos[0] - self.Pos[0]) == 0:  
-            if self.v.r == -1:
-                self.recharge()
-            self.Pos[1] = self.Pos[1] + 1
-        elif (finalPos[1] - self.Pos[1]) == 0: 
-            if self.h.r == -1: 
-                self.recharge()
-            self.Pos = self.h.Pos     
-        else:
-            self.Pos = results.Pos
+        self.position = results.Pos
         self.batery-=1
 
 
 if __name__ == '__main__':
     
-    campo = Camp(_initialPos, finalPos)
-
+    campo = Camp()
     robot = Player(campo)
-    ##campo.tabuleiro[2][2] = MoveRestriction([2,2])
-    campo.tabuleiro[2][3] = MoveRestriction([2,3])
-    #campo.tabuleiro[9][8] = RechargeRestriction([9,8])
+    
     campo.createSpace(MoveRestriction([2,2]))
+    campo.createSpace(MoveRestriction([3,2]))
     campo.createSpace(MoveRestriction([5,3]))
-    campo.createSpace(initialSpace(_initialPos))
-    campo.createSpace(finalSpace(finalPos))
-    Gameloop = True
+    campo.createSpace(RechargeRestriction([6,3]))
+    campo.createSpace(initialSpace(INITIAL_POS))
+    campo.createSpace(finalSpace(FINAL_POS))
+    
 
-    for i in range(9,-1, -1):
-        for j in range(10):
-            print(f'[{campo.tabuleiro[j][i].r:^5}]', end = '')
+    for line in range(9,-1, -1):
+        for column in range(10):
+            print(f'[{campo.tabuleiro[column][line].r:^5}]', end = '')
         print()
 
     
     while Gameloop:
-        robot.walk()
-        print(robot.Pos)
-        if robot.Pos == finalPos:
+        robot.move()
+        print(robot.position)
+        if robot.position == FINAL_POS:
             print('chegou')
             Gameloop=False
