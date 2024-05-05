@@ -1,19 +1,24 @@
 from time import sleep 
+from enum import Enum
 
 # Mapa
 INITIAL_POS = [0,0]
 FINAL_POS = [6,6]
-
-
 Gameloop = True
 
+class Content(Enum):
+    EMPTY = 255
+    MOVE_RESTRICTION = 1
+    RECHARGE_RESTRICTION = -1
+    INITIAL_SPACE = 99
+    FINAL_SPACE = 100
 
 class Space():
     r:int
     Pos:list
     def __init__(self, p: list):
         self.Pos = p
-        self.r = 255
+        self.content = Content.EMPTY
         pass
 
 class Camp():
@@ -28,28 +33,27 @@ class Camp():
     
     def createSpace(self,spaceType:Space):
         self.tabuleiro[spaceType.Pos[0]][spaceType.Pos[1]] = spaceType
-        if spaceType.r == 100:
+        if spaceType.content == Content.FINAL_SPACE:
             self.end = spaceType
 
 class initialSpace(Space):
     def __init__(self,pos):
-        self.r=99
+        self.content=Content.INITIAL_SPACE
         self.Pos=pos
 
 class finalSpace(Space):
-    _t: int
     def __init__(self,p):
-        self.r=100
+        self.content=Content.FINAL_SPACE
         self.Pos=p
 
 class MoveRestriction(Space):
     def __init__(self,pos):
-        self.r = 1
+        self.content = Content.MOVE_RESTRICTION
         self.Pos=pos
 
 class RechargeRestriction(Space):
     def __init__(self,pos):
-        self.r = -1
+        self.content = Content.RECHARGE_RESTRICTION
         self.Pos=pos
 
 class Player():
@@ -58,22 +62,21 @@ class Player():
     diagonal: Space
     Pos: list
     tab: Camp
-    batery: int
+    batery: list
     # 100% do código até agora foi escrito a mão
 
     def __init__(self, t):
         self.position = [0,0]
         self.tab = t
-        self.batery = 4
+        self.batery=[1,1,1,1]
 
     def recharge(self):
-        while self.batery<5:
+        while len(self.batery)<5:
             print('recarregando: ', self.batery)
-            self.batery+=1
+            self.batery.append(1)
             sleep(1)
 
     def move(self):
-
         sleep(1)
         results:Space
         # a variavel results deve guardar as informações do espaço escolhido para ser o próximo
@@ -87,7 +90,7 @@ class Player():
         print('HD: ',hDistance)'''
 
         #se a diagonal nao estiver bloqueada, devemos andar por ela
-        if (self.diagonal.r == 255): results= self.diagonal
+        if (self.diagonal.content != Content.MOVE_RESTRICTION): results= self.diagonal
 
         #caso contrario faremos uma analise do menor cateto
         else:
@@ -95,17 +98,17 @@ class Player():
             hDistance = self.tab.end.Pos[0] - self.position[0]
 
             if hDistance < vDistance:
-                if (self.horizontal.r != 1):
+                if (self.horizontal.content != Content.MOVE_RESTRICTION):
                     results= self.horizontal
                 else: raise Exception('erro na horizonta')
                             
             elif hDistance > vDistance:
-                if (self.vertical.r != 1):
+                if (self.vertical.content != Content.MOVE_RESTRICTION):
                     results= self.vertical
                 else: raise Exception('erro na vertical')
                     
             else: 
-                if (self.horizontal.r != 1):
+                if (self.horizontal.content != Content.MOVE_RESTRICTION):
                     results= self.horizontal
         
         # Cancela o movimento diagonal quando alinhar
@@ -113,14 +116,14 @@ class Player():
         elif(FINAL_POS[1]-self.position[1])==0:results=self.horizontal 
 
         # Recarga impossivel no proximo espaço
-        shadowZone = results.r == -1 
+        shadowZone = results.content == Content.RECHARGE_RESTRICTION
 
-        if self.batery==1 or (shadowZone and self.batery<3):
+        if len(self.batery)==1 or (shadowZone and len(self.batery)<3):
             print('Recarga obrigatória')
             self.recharge()
 
         self.position = results.Pos
-        self.batery-=1
+        self.batery.pop()
 
 
 if __name__ == '__main__':
@@ -138,7 +141,7 @@ if __name__ == '__main__':
 
     for line in range(9,-1, -1):
         for column in range(10):
-            print(f'[{campo.tabuleiro[column][line].r:^5}]', end = '')
+            print(f'[{campo.tabuleiro[column][line].content.value :^5}]', end = '')
         print()
 
     
