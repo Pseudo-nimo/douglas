@@ -5,7 +5,7 @@ TESTING = 0
 
 # Mapa
 INITIAL_POS = (0,0)
-FINAL_POS = (7,6)
+FINAL_POS = (7,7)
 Gameloop = True
 
 class Content(Enum):
