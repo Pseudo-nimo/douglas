@@ -41,6 +41,9 @@ class Camp():
         if spaceType.content == Content.FINAL_SPACE:
             self.end = spaceType
 
+    def getSpacebyPosition(self,p):
+        return self.matrix[p[0]][p[1]]
+
 class initialSpace(Space):
     def __init__(self,pos):
         self.content=Content.INITIAL_SPACE
@@ -92,8 +95,11 @@ class Player():
         results:Space
         # a variavel results deve guardar as informações do espaço escolhido para ser o próximo
 
-        self.diagonal=self.world.matrix[self.position[0]+1][self.position[1]+1]
+        self.diagonal = self.world.matrix [self.position[0]+1] [self.position[1]+1]
+        self.diagonal = self.world.getSpacebyPosition( [self.position[0]+1, self.position[1]+1])
+        
         self.horizontal= self.world.matrix[self.position[0]+1][self.position[1]]
+
         self.vertical= self.world.matrix[self.position[0]][self.position[1]+1]
         
         #se a diagonal nao estiver bloqueada, devemos andar por ela
@@ -111,7 +117,7 @@ class Player():
                             
             elif _hDistance > _vDistance:
                 if (self.vertical.content != Content.MOVE_RESTRICTION): 
-                    results= self.vertical
+                    results = self.vertical
                 else: raise Exception('erro na vertical')
                     
             else: 
