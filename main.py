@@ -91,6 +91,7 @@ class Player():
         self.world = board
         self.position = INITIAL_POS
         self.batery=[1,1,1,1]
+        self.branch_points = [] 
 
     def recharge(self):
         while len(self.batery)<5:
@@ -99,15 +100,25 @@ class Player():
 
     def move(self):
         sleep(2 * TESTING)
+        _p = self.position
+        _vizinhosDisponiveis=[]
         results:Space
         # a variavel results deve guardar as informações do espaço escolhido para ser o próximo
 
-        #self.diagonal = self.world.matrix [self.position[0]+1] [self.position[1]+1]
-        _p = self.position
+        
         self.diagonal = self.world.getSpace( _p[0]+1, _p[1]+1)
         self.horizontal = self.world.getSpace( _p[0]+1, _p[1])
         self.vertical= self.world.getSpace( _p[0], _p[1]+1)
         
+        _vizinho = [self.diagonal, self.horizontal, self.vertical]
+        
+        for i in range(3):
+            if self.world.getSpace(*_vizinho[i].Pos).content != Content.MOVE_RESTRICTION:
+                    _vizinhosDisponiveis.append(_vizinho[i])
+
+        if len(_vizinhosDisponiveis)==2:
+            self.branch_points.append(self.position)  # Adiciona o ponto de bifurcação à lista
+
         #se a diagonal nao estiver bloqueada, devemos andar por ela
         if (self.diagonal.content != Content.MOVE_RESTRICTION): results= self.diagonal
 
@@ -143,6 +154,7 @@ class Player():
         self.batery.pop()
 
 
+
 if __name__ == '__main__':
     
     campo = Camp()
@@ -151,7 +163,7 @@ if __name__ == '__main__':
     campo.createSpace(MoveRestriction(2,2))
     campo.createSpace(MoveRestriction(3,2))
     campo.createSpace(MoveRestriction(5,3))
-    campo.createSpace(MoveRestriction(1,2))
+    campo.createSpace(MoveRestriction(2,3))
     campo.createSpace(RechargeRestriction(6,3))
     campo.createSpace(Gold(1,1))
     campo.createSpace(Silver(3,1))
@@ -182,4 +194,5 @@ if __name__ == '__main__':
         print(robot.position)
         if robot.position == list(FINAL_POS):
             print('chegou')
+            print(robot.branch_points)
             Gameloop = False
