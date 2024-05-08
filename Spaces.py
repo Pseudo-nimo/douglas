@@ -18,10 +18,18 @@ class Space():
         self.content = Content.EMPTY
         pass
 
+class Root():
+    def __init__(self, left=None,right=None, key=None):
+        self.left = left
+        self.right = right
+        self.key = key
+
+
 class Camp():
     matrix:list 
     init: Space
     end: Space
+    rootList:list
 
     def __init__(self):
         self.matrix= [[Space(*(column,line)) for line in range(11)] for column in range(11)]
@@ -31,7 +39,10 @@ class Camp():
         if spaceType.content == Content.FINAL_SPACE:
             self.end = spaceType
         
-            
+    def defineRoot(self,right, left, x,y):
+        root = Root(left, right, [x,y])
+        self.rootList.append(root)
+
 
     def getSpace(self,x,y)->Space:
         return self.matrix[x][y]

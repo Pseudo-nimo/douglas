@@ -8,6 +8,7 @@ INITIAL_POS = (0,0)
 FINAL_POS = (7,7)
 Gameloop = True
 
+
 class Player():
     def __init__(self, board):
         
