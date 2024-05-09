@@ -1,3 +1,4 @@
+from importlib.resources import contents
 from time import sleep 
 from Spaces import *
 
@@ -7,7 +8,23 @@ TESTING = 0
 INITIAL_POS = (0,0)
 FINAL_POS = (7,7)
 Gameloop = True
+rootList=[]
+priority = 'right'
 
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.left = None
+        self.right = None
+
+
+
+def pre_order_traversal(node):
+    if node is not None:
+        print(node.data)  # Visita o nó
+        pre_order_traversal(node.left)  # Percorre a subárvore esquerda
+        pre_order_traversal(node.right)  # Percorre a subárvore direita
 
 class Player():
     def __init__(self, board):
@@ -15,19 +32,16 @@ class Player():
         self.world = board
         self.position = INITIAL_POS
         self.batery=[1,1,1,1]
-        self.branch_points = [] 
-        self.vizinhosDisponiveis=[]
 
     def recharge(self):
         while len(self.batery)<5:
             self.batery.append(1)
-            sleep(1* TESTING)
+            sleep(1 * TESTING)
 
     def move(self):
         sleep(2 * TESTING)
         _p = self.position
-        self.vizinhosDisponiveis=[]
-        
+        vizinhosDisponiveis=[]
         results:Space
         # a variavel results deve guardar as informações do espaço escolhido para ser o próximo
 
@@ -38,21 +52,18 @@ class Player():
         
         vizinho = [self.diagonal, self.horizontal, self.vertical]
         
-        for v in vizinho:
-            if v.content != Content.MOVE_RESTRICTION:
-                self.vizinhosDisponiveis.append(v)
-        campo.defineRoot(
-            self.vizinhosDisponiveis[1],
-            self.vizinhosDisponiveis[0],
-            *self.position
-                    )
-
+        vizinhosDisponiveis = [a for a in vizinho if a.content != Content.MOVE_RESTRICTION ]
+        
+        if len(vizinhosDisponiveis)==2:
+            print('porra')
             
-
-        #caso o espaço diagonal esteja livre, ele será escolhido
-
+            root = Node(self.world.getSpace(*_p))
+            
+            root.left= Node(vizinho[0])
+            root.right=Node(vizinho[1])
+            rootList.append(root)
+            
         if (self.diagonal.content != Content.MOVE_RESTRICTION): results= self.diagonal
-    
         #caso contrario faremos uma analise do menor cateto
         else:
             _vDistance = self.world.end.Pos[1] - self.position[1]
@@ -84,6 +95,7 @@ class Player():
         self.position = results.Pos
         self.batery.pop()
 
+root: Space
 
 if __name__ == '__main__':
     
@@ -103,26 +115,35 @@ if __name__ == '__main__':
     campo.createSpace(initialSpace(*INITIAL_POS))
     campo.createSpace(finalSpace(*FINAL_POS))
     
+    
 
     for line in range(9,-1, -1):
         for column in range(10):
             print(f'[{campo.matrix[column][line].content.value :^5}]', end = '')
         print()
 
+    root = Node(campo.getSpace(1,1))
     while Gameloop:
-        robot.move()
-        if(campo.getSpace(*robot.position).content == Content.GOLD):
-            print('OUROOOOOOOOOOOOOOOOOOO')
-        if(campo.getSpace(*robot.position).content == Content.SILVER):
-            print('PRATAAAAAAAAAAAAAAAAAA')
-        if(campo.getSpace(*robot.position).content == Content.BRONZE):
-            print('BRONZEEEEEEEEEEEEEEEE')
+        try: 
+            robot.move()
+            if(campo.getSpace(*robot.position).content == Content.GOLD):
+                print('OUROOOOOOOOOOOOOOOOOOO')
+            if(campo.getSpace(*robot.position).content == Content.SILVER):
+                print('PRATAAAAAAAAAAAAAAAAAA')
+            if(campo.getSpace(*robot.position).content == Content.BRONZE):
+                print('BRONZEEEEEEEEEEEEEEEE')
+        except:
+            priority= 'esquerda'
             
             
-            
+
         print(robot.position)
+        
         if robot.position == list(FINAL_POS):
             print('chegou')
-            for c in campo.rootList:
-                print (c.key)
             Gameloop = False
+            [print(rootList[i].data.Pos) for i in range(len(rootList))]
+            print("Percurso em pré-ordem:")
+            pre_order_traversal(root)
+
+    

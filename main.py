@@ -21,7 +21,7 @@ class Player():
     def recharge(self):
         while len(self.batery)<5:
             self.batery.append(1)
-            sleep(1* TESTING)
+            sleep(1 * TESTING)
 
     def move(self):
         sleep(2 * TESTING)

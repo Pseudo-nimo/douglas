@@ -1,4 +1,5 @@
 from enum import Enum
+from operator import indexOf
 
 class Content(Enum):
     EMPTY = 255
@@ -16,32 +17,20 @@ class Space():
     def __init__(self, x,y):
         self.Pos = [x,y]
         self.content = Content.EMPTY
-        pass
-
-class Root():
-    def __init__(self, left=None,right=None, key=None):
-        self.left = left
-        self.right = right
-        self.key = key
-
 
 class Camp():
     matrix:list 
     init: Space
     end: Space
-    rootList:list
 
     def __init__(self):
         self.matrix= [[Space(*(column,line)) for line in range(11)] for column in range(11)]
-        
+        self.init = self.getSpace(0,0)
+
     def createSpace(self,spaceType:Space):
         self.matrix[spaceType.Pos[0]][spaceType.Pos[1]] = spaceType
         if spaceType.content == Content.FINAL_SPACE:
             self.end = spaceType
-        
-    def defineRoot(self,right, left, x,y):
-        root = Root(left, right, [x,y])
-        self.rootList.append(root)
 
 
     def getSpace(self,x,y)->Space:
@@ -51,7 +40,6 @@ class initialSpace(Space):
     def __init__(self,x,y):
         self.Pos=[x,y]
         self.content=Content.INITIAL_SPACE
-        
 
 class finalSpace(Space):
     def __init__(self, x,y):
@@ -61,27 +49,26 @@ class finalSpace(Space):
 class MoveRestriction(Space):
     def __init__(self, x,y):
         self.Pos=[x,y]
-        self.content = Content.MOVE_RESTRICTION
-        
+        self.content = Content.MOVE_RESTRICTION   
 
 class RechargeRestriction(Space):
     def __init__(self, x,y):
         self.Pos=[x,y]
         self.content = Content.RECHARGE_RESTRICTION
 
-
 class Gold(Space):
     def __init__(self, x,y):
         self.Pos=[x,y]
         self.content=Content.GOLD
-        
 
 class Silver(Space):
     def __init__(self, x,y):
         self.Pos=[x,y]
         self.content=Content.SILVER
 
+
 class Bronze(Space):
     def __init__(self, x,y):
         self.Pos=[x,y]
         self.content=Content.BRONZE
+
