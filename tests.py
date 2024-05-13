@@ -9,8 +9,11 @@ INITIAL_POS = (0,0)
 FINAL_POS = (7,7)
 Gameloop = True
 rootList=[]
-priority = 'right'
+priority = 0
 
+#Registros
+endPrompt=[]
+mineralLogs={}
 
 
 
@@ -46,7 +49,7 @@ class Player():
             print(vizinhosDisponiveis)
             rootList.append(self.position)
 
-        if priority == 'right':
+        if priority == 0:
             prio = vizinhosDisponiveis[0]
         else:
             prio = vizinhosDisponiveis[1]
@@ -58,20 +61,22 @@ class Player():
             _vDistance = self.world.end.Pos[1] - self.position[1]
             _hDistance = self.world.end.Pos[0] - self.position[0]
 
-            if _hDistance < _vDistance:
-                if (self.horizontal.content != Content.MOVE_RESTRICTION): 
-                    results= self.horizontal
-                else: raise Exception('erro na horizonta')
-                            
-            elif _hDistance > _vDistance:
-                if (self.vertical.content != Content.MOVE_RESTRICTION): 
-                    results = self.vertical
-                else: raise Exception('erro na vertical')
-               
-            
+            if _hDistance < _vDistance: results= self.horizontal     
+            elif _hDistance > _vDistance: results = self.vertical
             if (prio != Content.MOVE_RESTRICTION):
-                results= prio
+                results = prio
         
+        #Tratamento de erro
+        if results == self.vertical:
+            if (self.vertical.content != Content.MOVE_RESTRICTION): 
+                results = self.vertical
+            else: raise Exception('erro na vertical')
+        if results == self.horizontal:
+            if (self.horizontal.content != Content.MOVE_RESTRICTION): 
+                results = self.horizontal
+            else: raise Exception('erro na horizontal')
+
+
         # Cancela o movimento diagonal quando alinhar
         if (FINAL_POS[0]-self.position[0])==0:  
             if (self.vertical.content != Content.MOVE_RESTRICTION): 
@@ -83,7 +88,7 @@ class Player():
             else: raise Exception('erro na vertical')
                 
                 
-        if(campo.getSpace(*robot.position).content == Content.GOLD):
+        if(results.content == Content.GOLD): mineralLogs[results.name]=
                 print('OUROOOOOOOOOOOOOOOOOOO')
         if(campo.getSpace(*robot.position).content == Content.SILVER):
                 print('PRATAAAAAAAAAAAAAAAAAA')
@@ -111,7 +116,7 @@ if __name__ == '__main__':
     campo.createSpace(MoveRestriction(6,3))
     campo.createSpace(MoveRestriction(7,3))
     campo.createSpace(MoveRestriction(2,3))
-    #campo.createSpace(RechargeRestriction(6,3))
+    campo.createSpace(RechargeRestriction(6,3))
     campo.createSpace(Gold(1,1))
     campo.createSpace(Silver(3,1))
     campo.createSpace(Silver(7,4))
@@ -133,8 +138,8 @@ if __name__ == '__main__':
             robot.move()
             
         except:
-            if priority == 'left': priority='right'
-            else: priority='left'
+            if priority == 1: priority=0
+            else: priority=1
             rootList.pop()
             robot.position = rootList[-1]
         

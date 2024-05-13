@@ -1,0 +1,2 @@
+Olá, mundo!
+Este é um exemplo de escrita em arquivo em Python.

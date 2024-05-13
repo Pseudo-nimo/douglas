@@ -17,6 +17,7 @@ class Space():
     def __init__(self, x,y):
         self.Pos = [x,y]
         self.content = Content.EMPTY
+        self.name = 'free_2_go'
 
 class Camp():
     matrix:list 
@@ -49,26 +50,31 @@ class finalSpace(Space):
 class MoveRestriction(Space):
     def __init__(self, x,y):
         self.Pos=[x,y]
-        self.content = Content.MOVE_RESTRICTION   
+        self.content = Content.MOVE_RESTRICTION
+        self.name="obstacle"   
 
 class RechargeRestriction(Space):
     def __init__(self, x,y):
         self.Pos=[x,y]
         self.content = Content.RECHARGE_RESTRICTION
+        self.name="charging_impossible"
 
 class Gold(Space):
     def __init__(self, x,y):
         self.Pos=[x,y]
         self.content=Content.GOLD
+        self.name="gold"
 
 class Silver(Space):
     def __init__(self, x,y):
         self.Pos=[x,y]
         self.content=Content.SILVER
+        self.name="silver"
 
 
 class Bronze(Space):
     def __init__(self, x,y):
         self.Pos=[x,y]
         self.content=Content.BRONZE
+        self.name="bronze"
 
