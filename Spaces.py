@@ -46,6 +46,7 @@ class finalSpace(Space):
     def __init__(self, x,y):
         self.content=Content.FINAL_SPACE
         self.Pos= [x,y]
+        self.name='free_2_go'
 
 class MoveRestriction(Space):
     def __init__(self, x,y):
