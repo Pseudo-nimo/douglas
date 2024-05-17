@@ -12,7 +12,6 @@ class Content(Enum):
     BRONZE = 63
 
 class Space():
-    r:int
     Pos:list
     def __init__(self, x,y):
         self.Pos = [x,y]
