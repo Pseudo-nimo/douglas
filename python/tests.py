@@ -216,6 +216,6 @@ with open(nome_arquivo, 'w') as arquivo:
 
 nome_arquivo = 'obstacles.txt'
 with open(nome_arquivo, 'w') as arquivo:
-    for i in robot.rechargeList:
-        arquivo.write(str(i[0])+','+str(i[1])+'\n')
+    for i in robot.obstacleList:
+        arquivo.write(str(i[0]+1)+','+str(i[1]+1)+'\n')
 
