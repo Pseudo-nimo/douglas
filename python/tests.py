@@ -27,7 +27,7 @@ class Player():
         self.pathList=[]
         self.shadowList=[]
         self.mineralList=[]
-        self.finalpathList:list
+        self.finalPathList=[]
 
     def recharge(self):
         self.rechargeList.append(self.position) 
@@ -110,7 +110,7 @@ class Player():
 
         # Recarga impossivel no proximo espaço
         shadowZone = results.content == Content.RECHARGE_RESTRICTION
-        
+
 
         # Recarga
         if len(self.batery)==1 or (shadowZone and len(self.batery)<3): 
@@ -137,8 +137,9 @@ def createCamp(campo):
     campo.createSpace(initialSpace(*INITIAL_POS))
     campo.createSpace(finalSpace(*FINAL_POS))
     
-    '''campo.createSpace(MoveRestriction(6,3))
-    campo.createSpace(MoveRestriction(7,3))'''
+    campo.createSpace(MoveRestriction(6,3))
+    campo.createSpace(MoveRestriction(7,3))
+    ''' '''
     
     for line in range(9,-1, -1):
         for column in range(10):
@@ -158,13 +159,24 @@ if __name__ == '__main__':
         try: 
             robot.pathList.append(robot.position)
             robot.move()
+            robot.finalPathList.append(robot.position)
+            
             
             
         except:
+            print(robot.pathList)
+            print(robot.finalPathList)
+            print(robot.rootList)
             if priority == 1: priority=0
             else: priority=1
             robot.rootList.pop()
+            for i in range(len(robot.finalPathList)-1,0,-1):
+                if (i) > robot.finalPathList.index(robot.rootList[-1]):
+                    robot.finalPathList.pop()
+                    print('i:',robot.finalPathList)
             robot.position = robot.rootList[-1]
+            
+                    
         
         if robot.position == list(FINAL_POS):
             Gameloop = False
@@ -184,6 +196,12 @@ if __name__ == '__main__':
 nome_arquivo = 'path.txt'
 with open(nome_arquivo, 'w') as arquivo:
     for i in robot.pathList:
+        arquivo.write(str(i[0])+','+str(i[1])+'\n')
+
+
+nome_arquivo = 'fastest_path.txt'
+with open(nome_arquivo, 'w') as arquivo:
+    for i in robot.finalPathList:
         arquivo.write(str(i[0])+','+str(i[1])+'\n')
 
 nome_arquivo = 'charge_impossible.txt'
