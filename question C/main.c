@@ -102,7 +102,7 @@ int main() {
         // Verificar a bateria e recarregar se necessário
         if ((next_pos_data == CHARGE_IMPOSSIBLE && percentage(&battery) <= 50 )|| percentage(&battery) <=25) {
             for (int i = 0;i < 4; i++) push(&battery);
-            rechargeList[rechargeCount] = (Neighbor){2,{actual[0], actual[1]} };
+            rechargeList[rechargeCount] = (Neighbor){CHARGING_CODE,{actual[0], actual[1]} };
             rechargeCount++;
             walking_time += 4;
   

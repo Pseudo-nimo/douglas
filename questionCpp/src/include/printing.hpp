@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 #define EMPTY 255
 #define OBSTACLES 0
@@ -13,15 +14,18 @@
 #define SILVER 127
 #define BRONZE 63
 
-
-class Neighbor {
+class Space {
 public:
-    int data;
+    Space(int data,int posit[2]);
+    int data; 
     int position[2];
+
 };
 
-void write_on_archive(const char *set_name, Neighbor data_list[], int size);
-void remove_duplicates(Neighbor data_list[], int *size);
-void create_archive(Neighbor data_list[], int size, int type) ;
+
+
+void write_on_archive(std::string name,std::vector<Space> data_list, int size);
+void remove_duplicates(std::vector<Space> data_list, int size);
+void create_archive(std::vector<Space> data_list, int size) ;
 
 #endif // PRINTING_HPP

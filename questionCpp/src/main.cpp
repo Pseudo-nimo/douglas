@@ -19,12 +19,27 @@
 #define SILVER 127
 #define BRONZE 63
 
-void print_obstacle_found(int x, int y) {
-    std::cout << "obstacle_found " << x << "," << y << std::endl;
+
+
+class Mineral: Space{
+    public:
+        int data;
+        int position[2];
+
+};
+class Restriction: Space{
+    public:
+        int data;
+        int position[2];
+
+};
+
+void print_obstacle_found(int pos[2]) {
+    std::cout << "obstacle_found " << pos[0] << "," << pos[1] << std::endl;
 }
 
-bool is_in_list( Neighbor list[], int size, int pos[]) {
-    for (int i = 0; i < size; i++) {
+bool is_in_list( std::vector<Space>  list, int pos[]) {
+    for (int i = 0; i <list.size(); i++) {
         if (list[i].position[0] == pos[0] && list[i].position[1] == pos[1]) {
             return true;
         }
@@ -46,9 +61,9 @@ int main() {
     int next_pos[2] = {-1, -1};
 
     // Inicialização das listas de minerais e restrições
-    Neighbor mineralList[50];
-    Neighbor restrictionList[50];
-    Neighbor rechargeList[50];
+    std::vector<Space> mineralList;
+    std::vector<Space>  restrictionList;
+    std::vector<Space>  rechargeList;
 
     int mineralCount = 0;
     int restrictionCount = 0;
@@ -65,36 +80,37 @@ int main() {
 
         if (next_pos[0] == -1 && next_pos[1] == -1) break;
 
-        Neighbor actual_path = {map_data[8 - actual[1]][actual[0]],{actual[0], actual[1]}};
+        int up_right[2]={actual[0] + 1, actual[1] + 1};
+        int up      [2] = {actual[0], actual[1] + 1};
+        int right   [2]={actual[0] + 1, actual[1] + 1};
+        int down_right[2]={actual[0] + 1, actual[1] - 1};
+        
+        Space actual_path(map_data[8 - actual[1]][actual[0]], actual);
         int next_pos_data = map_data[8 - next_pos[1]][next_pos[0]];
-        Neighbor up_right_data = {map_data[7 - actual[1]][actual[0] + 1], {actual[0] + 1, actual[1] + 1}};
-        Neighbor up_data = {map_data[7 - actual[1]][actual[0]], {actual[0], actual[1] + 1}};
-        Neighbor right_data = {map_data[8 - actual[1]][actual[0] + 1], {actual[0] + 1, actual[1] + 1}};
-        Neighbor down_right_data = {map_data[9 - actual[1]][actual[0] + 1], {actual[0] + 1, actual[1] - 1}};
-
-        Neighbor neighbors[] = {down_right_data, right_data, up_right_data, up_data};
+        Space up_right_data(map_data[7 - actual[1]][actual[0] + 1], up_right);
+        Space up_data(map_data[7 - actual[1]][actual[0]], up);
+        Space right_data(map_data[8 - actual[1]][actual[0] + 1], right);
+        Space down_right_data(map_data[9 - actual[1]][actual[0] + 1], down_right);
+        
+        Space Spaces[] = {down_right_data, right_data, up_right_data, up_data};
 
         // Checar obstáculos (0)
         for (int i = 0; i < 4; i++) {
             
-            if ((neighbors[i].data == OBSTACLES || neighbors[i].data == CHARGE_IMPOSSIBLE) &&
-                !is_in_list(restrictionList, restrictionCount, neighbors[i].position)) {
-                restrictionList[restrictionCount] = neighbors[i];
+            if ((Spaces[i].data == OBSTACLES || Spaces[i].data == CHARGE_IMPOSSIBLE) &&
+                !is_in_list(restrictionList, Spaces[i].position)) {
+                
+                restrictionList.push_back(Spaces[i]);
                 restrictionCount++;
                 
-                if (neighbors[i].data == OBSTACLES) {
-                    print_obstacle_found(neighbors[i].position[0], neighbors[i].position[1]);
-                }
+                if (Spaces[i].data == OBSTACLES) {print_obstacle_found(Spaces[i].position);}
             }
         }
-
-
-        
         // Checar minérios (191, 127, 63)
-        if ((actual_path.data == GOLD || actual_path.data == SILVER || actual_path.data == BRONZE) &&
-            !is_in_list(mineralList, mineralCount,actual)) {
+        
+        if ((actual_path.data == GOLD || actual_path.data == SILVER || actual_path.data == BRONZE)) {
             mineralCount++;
-            mineralList[mineralCount] = (actual_path);
+            mineralList.push_back(actual_path);
             if (actual_path.data == GOLD) {
                 gold_count++;
             } else if (actual_path.data == SILVER) {
@@ -107,9 +123,9 @@ int main() {
         // Verificar a bateria e recarregar se necessário
         if ((next_pos_data == CHARGE_IMPOSSIBLE && battery.percentage() <= 50) || battery.percentage() <= 25) {
             for (int i = 0; i < 4; i++) battery.push();
-            rechargeCount++; 
-            rechargeList[rechargeCount] = ((Neighbor){CHARGING_CODE, {actual[0], actual[1]}});
+            rechargeList.push_back( Space(CHARGING_CODE, actual));
             walking_time += 4;
+            rechargeCount++; 
         }
 
         // Remover item da bateria e aumentar tempo de caminhada
@@ -121,18 +137,19 @@ int main() {
         actual[0] = next_pos[0];
         actual[1] = next_pos[1];
     }
+    create_archive(mineralList,GOLD);
+    create_archive(mineralList, SILVER);
+    create_archive(mineralList,BRONZE);
+    create_archive(restrictionList,OBSTACLES);
+    create_archive(restrictionList,CHARGE_IMPOSSIBLE);
+    create_archive(rechargeList,CHARGING_CODE);
 
     std::cout << gold_count << std::endl;
     std::cout << silver_count << std::endl;
     std::cout << bronze_count << std::endl;
     std::cout << walking_time << std::endl;
 
-    create_archive(mineralList,10,GOLD);
-    create_archive(mineralList, 10,SILVER);
-    create_archive(mineralList,10, BRONZE);
-    create_archive(restrictionList,10, OBSTACLES);
-    create_archive(restrictionList,10,CHARGE_IMPOSSIBLE);
-    create_archive(rechargeList,rechargeCount, CHARGING_CODE);
+    
 
     return 0;
 }
